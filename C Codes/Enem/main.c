@@ -1,30 +1,38 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-void createMatrix(char *matrix, int *rows, int *colunm){
-    
-}
+int main(void) {
+    FILE *file;
+    char line[1024];
 
+    // Abra o arquivo no modo de leitura
+    file = fopen("C:\\Users\\Arthur\\OneDrive\\Desktop\\IFPI\\Learning-to-Program\\C Codes\\Enem\\files\\enem2014_nota_por_escola.csv", "r");
 
-int main(void){
-    FILE *archive;
-    char **matrix;
-    
-    archive = fopen("./files/enem2014_nota_por_escola.txt.csv", "r");
+    // Verifica se o arquivo foi aberto corretamente
+    if (file == NULL) {
+        printf("Erro ao abrir o arquivo.\n");
+        return 1;
+    }
+
+    // Lê o arquivo linha por linha
+    while (fgets(line, sizeof(line), file)) {
+        // Remove o caractere de nova linha no final, se presente
+        line[strcspn(line, "\n")] = 0;
+
+        // Divide a linha em tokens usando vírgula como delimitador
+        char *token = strtok(line, ",");
+
+        // Imprime cada token
+        while (token != NULL) {
+            printf("%s\t", token);
+            token = strtok(NULL, ",");
+        }
+        printf("\n");  // Adiciona uma nova linha após imprimir os tokens de cada linha
+    }
+
+    // Fecha o arquivo
+    fclose(file);
+
     return 0;
 }
-
-
-/*
-Top N Brasil (todas as áreas)
-Top N Brasil por Área
-Top N por Estado
-Top N por Estado e Rede (pública ou privada)
-Media Nacional por Área
-Melhor escola por Área e Estado ou BR
-Listas Escolas por Estado Ordenada Por Renda
-Busca escola específica por parte  Nome
-Ranking ENEM por Estado
-Ranking ENEM por Região do País
-
-
-*/
