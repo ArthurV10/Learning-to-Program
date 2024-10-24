@@ -47,7 +47,7 @@ void menu(){
     switch (option)
     {
     case 1:
-        inserir(&v[ultimo]);  // Passa o próximo aluno a ser inserido
+        inserir(&v[ultimo]);  
         break;
     case 2: {
         int index;
