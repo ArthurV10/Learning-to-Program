@@ -1,4 +1,4 @@
-#include <stdio.h>
+ #include <stdio.h>
 #include <stdlib.h>
 
 typedef struct no {
@@ -9,7 +9,7 @@ typedef struct no {
 Lst criarNo(int x) {
     Lst n = (struct no*)malloc(sizeof(struct no));
     n->item = x;
-    n->prox = NULL; 
+    n->prox = NULL;  
     return n;
 }
 
