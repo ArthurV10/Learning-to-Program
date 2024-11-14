@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/Atividade_Exercicio_POO_4.iml" filepath="$PROJECT_DIR$/.idea/Atividade_Exercicio_POO_4.iml" />
+      <module fileurl="file://$PROJECT_DIR$/questao10/questao10.iml" filepath="$PROJECT_DIR$/questao10/questao10.iml" />
+      <module fileurl="file://$PROJECT_DIR$/questao6/questao6.iml" filepath="$PROJECT_DIR$/questao6/questao6.iml" />
+      <module fileurl="file://$PROJECT_DIR$/questao7/questao7.iml" filepath="$PROJECT_DIR$/questao7/questao7.iml" />
+      <module fileurl="file://$PROJECT_DIR$/questao8/questao8.iml" filepath="$PROJECT_DIR$/questao8/questao8.iml" />
+      <module fileurl="file://$PROJECT_DIR$/questao9/questao9.iml" filepath="$PROJECT_DIR$/questao9/questao9.iml" />
+    </modules>
+  </component>
+</project>
