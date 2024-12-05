@@ -12,9 +12,29 @@ public class Banco {
         this.clientes = new ArrayList<>(); // Inicialização da lista de clientes
     }
 
-    public void inserir(Conta conta) {
+    public void inserirConta(Conta conta) {
+        // Verifica duplicação de número ou ID
+        for (Conta c : this.contas) {
+            if (c.getNumero().equals(conta.getNumero()) || c.getCliente().getId() == conta.getCliente().getId()) {
+                System.out.println("Erro: Conta com número ou ID já cadastrada: " + conta.getNumero());
+                return; // Impede duplicação de contas
+            }
+        }
+
+        // Verifica se o cliente associado existe
+        Cliente clienteAssociado = consultarCliente(conta.getCliente().getCpf());
+        if (clienteAssociado == null) {
+            System.out.println("Erro: Cliente associado à conta não encontrado.");
+            return;
+        }
+
+        // Se as validações forem atendidas, adiciona a conta
         this.contas.add(conta);
+        clienteAssociado.setConta(conta); // Associa a conta ao cliente
+        System.out.println("Conta " + conta.getNumero() + " adicionada com sucesso ao cliente " + clienteAssociado.getNome() + ".");
     }
+
+
 
     public List<Conta> getContas(){
         return this.contas;
@@ -34,17 +54,16 @@ public class Banco {
     }
 
     public void inserirCliente(Cliente cliente) {
-        boolean cpfExistente = false;
-        for (Cliente c : this.clientes){
-            if (cliente.getCpf().equals(cliente.getCpf())){
-               cpfExistente = true;
-               break;
-            }
-            if(!cpfExistente){
-                getClientes().add(cliente);
+        for (Cliente c : this.clientes) {
+            if (c.getId() == cliente.getId() || c.getCpf().equals(cliente.getCpf())) {
+                System.out.println("Erro: Cliente com ID ou CPF já cadastrado: " + cliente.getNome());
+                return; // Impede duplicação de clientes
             }
         }
+        this.clientes.add(cliente);
+        System.out.println("Cliente " + cliente.getNome() + " adicionado com sucesso.");
     }
+
 
     public Cliente consultarCliente(String cpf) {
         for (Cliente cliente : getClientes()) {
@@ -76,4 +95,5 @@ public class Banco {
         contaEncontrada.setCliente(clienteEncontrado);
         System.out.println("Cliente " + cpfCliente + " associado à conta " + numeroConta + " com sucesso.");
     }
+
 }
