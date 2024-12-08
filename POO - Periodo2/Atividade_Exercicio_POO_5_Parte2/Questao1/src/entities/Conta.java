@@ -12,6 +12,11 @@ public class Conta {
         this.id = id;
     }
 
+    public Conta(String numero, float saldo) {
+        this.numero = numero;
+        this.saldo = saldo;
+    }
+
     public String getNumero() {
         return this.numero;
     }
