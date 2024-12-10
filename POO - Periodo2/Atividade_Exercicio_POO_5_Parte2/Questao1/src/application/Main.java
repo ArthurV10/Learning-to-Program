@@ -1,8 +1,6 @@
 package application;
 
-import java.util.Date;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import entities.*;
 
 public class Main {
@@ -12,11 +10,13 @@ public class Main {
         // Criando clientes
         Cliente cliente1 = new Cliente(1, "João Silva", "12345678900", new Date(), null);
         Cliente cliente2 = new Cliente(2, "Maria Oliveira", "98765432100", new Date(), null);
+        Cliente clienteDuplicado = new Cliente(1, "Carlos Souza", "12345678900", new Date(), null); // Duplicado
 
         // Teste: Inserir clientes
         System.out.println("=== Teste: Inserir Clientes ===");
         banco.inserirCliente(cliente1); // Sucesso
         banco.inserirCliente(cliente2); // Sucesso
+        banco.inserirCliente(clienteDuplicado); // Falha (ID e CPF duplicados)
 
         // Criando contas
         Conta conta1 = new Conta("123", 1000.0f, cliente1.getId());
@@ -25,56 +25,47 @@ public class Main {
         Conta conta2 = new Conta("456", 2000.0f, cliente2.getId());
         conta2.setCliente(cliente2);
 
-        Conta conta3 = new Conta("789", 1500.0f, cliente1.getId());
-        conta3.setCliente(cliente1);
+        Conta contaDuplicada = new Conta("123", 3000.0f, cliente1.getId()); // Número duplicado
 
         // Teste: Inserir contas
         System.out.println("\n=== Teste: Inserir Contas ===");
         banco.inserirConta(conta1); // Sucesso
         banco.inserirConta(conta2); // Sucesso
-        banco.inserirConta(conta3); // Sucesso
+        banco.inserirConta(contaDuplicada); // Falha (número duplicado ou ID duplicado)
 
-        // Teste: Transferência entre contas
-        System.out.println("\n=== Teste: Transferência Entre Contas ===");
-        banco.transferir("123", "456", 500.0f); // Sucesso
-        System.out.println("Saldo conta1 (João): " + conta1.consultarSaldo());
-        System.out.println("Saldo conta2 (Maria): " + conta2.consultarSaldo());
+        // Listando contas e clientes
+        System.out.println("\n=== Lista de Contas ===");
+        for (Conta conta : banco.getContas()) {
+            System.out.println("Conta número: " + conta.getNumero() + ", Saldo: " + conta.consultarSaldo());
+        }
 
-        banco.transferir("123", "456", 2000.0f); // Falha (saldo insuficiente)
+        System.out.println("\n=== Lista de Clientes ===");
+        for (Cliente cliente : banco.getClientes()) {
+            System.out.println("Cliente: " + cliente.getNome() + ", CPF: " + cliente.getCpf());
+        }
 
-        // Teste: Transferência para múltiplas contas
-        System.out.println("\n=== Teste: Transferência para Múltiplas Contas ===");
-        List<Conta> contasDestino = new ArrayList<>();
-        contasDestino.add(conta2);
-        contasDestino.add(conta3);
-        banco.transferirParaMultiplas("123", contasDestino, 300.0f); // Sucesso ou falha dependendo do saldo
+        // Teste: Sacar dinheiro
+        System.out.println("\n=== Teste: Sacar Dinheiro ===");
+        banco.sacarDinheiro(conta1, 500); // Sucesso
+        banco.sacarDinheiro(conta1, 700); // Falha (saldo insuficiente)
 
-        // Exibir saldo após transferências múltiplas
-        System.out.println("Saldo conta1 (João): " + conta1.consultarSaldo());
-        System.out.println("Saldo conta2 (Maria): " + conta2.consultarSaldo());
-        System.out.println("Saldo conta3 (João): " + conta3.consultarSaldo());
+        // Teste: Depositar dinheiro
+        System.out.println("\n=== Teste: Depositar Dinheiro ===");
+        banco.depositarDinheiro(conta1, 1000); // Sucesso
 
-        // Teste: Quantidade de contas
-        System.out.println("\n=== Teste: Quantidade de Contas ===");
-        System.out.println("Quantidade de contas no banco: " + banco.quantidadeDeContas());
+        // Teste: Transferência
+        System.out.println("\n=== Teste: Transferência ===");
+        banco.transferirDinheiro(conta1.getNumero(), conta2.getNumero(), 300); // Sucesso
+        banco.transferirDinheiro(conta1.getNumero(), conta2.getNumero(), 2000); // Falha (saldo insuficiente)
 
-        // Teste: Total de dinheiro no banco
-        System.out.println("\n=== Teste: Total de Dinheiro no Banco ===");
-        System.out.println("Total de dinheiro no banco: " + banco.totalDeDinheiro());
+        // Teste: Transferência múltipla
+        System.out.println("\n=== Teste: Transferência Múltipla ===");
+        banco.transferirDinheiroMultiplas(conta1.getNumero(), Arrays.asList(conta2.getNumero()), 200); // Sucesso para conta 2
 
-        // Teste: Média de saldo das contas
-        System.out.println("\n=== Teste: Média de Saldo ===");
-        System.out.println("Média de saldo das contas: " + banco.mediaDeSaldo());
-
-        // Teste: Excluir conta
-        System.out.println("\n=== Teste: Excluir Conta ===");
-        banco.excluir("123");
-        System.out.println("Conta 123 excluída.");
-        System.out.println("Quantidade de contas no banco após exclusão: " + banco.quantidadeDeContas());
-
-        // Teste: Consultar por índice
-        System.out.println("\n=== Teste: Consultar Conta por Índice ===");
-        Conta contaIndice = banco.consultarPorIndice(0);
-        System.out.println(contaIndice != null ? "Conta encontrada no índice 0: " + contaIndice.getNumero() : "Nenhuma conta encontrada no índice 0.");
+        // Consultar saldo total e média
+        System.out.println("\n=== Saldo Total e Média de Saldos ===");
+        System.out.println("Saldo total: " + banco.saldoContasTotal());
+        System.out.println("Média de saldos: " + banco.mediaSaldos());
     }
 }
+b  bw
