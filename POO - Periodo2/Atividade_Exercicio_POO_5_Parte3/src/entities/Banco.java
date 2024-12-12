@@ -152,23 +152,44 @@ public class Banco {
             }
         }
 
-        // Transferencias Multiplas entre Contas
-        public void transferirDinheiroMultiplas(String numeroContaOrigem ,List<String> numeroContasParaTransferencia, int valor){
+        public void transferirDinheiroMultiplas(String numeroContaOrigem, int valor) {
             Conta contaOrigem = consultar(numeroContaOrigem);
-            for (String numeroConta: numeroContasParaTransferencia) {
+            
+            if (contaOrigem == null) {
+                System.out.println("Conta de origem inválida!");
+                return;
+            }
+            
+            Scanner scanner = new Scanner(System.in);
+            System.out.print("Digite a quantidade de contas para transferência: ");
+            int qtdContas = scanner.nextInt();
+            
+            String[] contasDestino = new String[qtdContas];
+            
+            for (int i = 0; i < qtdContas; i++) {
+                System.out.print("Digite o número da conta de destino " + (i + 1) + ": ");
+                contasDestino[i] = scanner.next();
+            }
+            
+            if (contaOrigem.consultarSaldo() < valor * qtdContas) {
+                System.out.println("Saldo insuficiente para realizar todas as transferências!");
+                return;
+            }
+            
+            for (String numeroConta : contasDestino) {
                 Conta contaDestino = consultar(numeroConta);
-                if ((contaOrigem!= null) && (contaDestino!= null)){
-                    if(contaOrigem.consultarSaldo() >= valor){
-                        contaOrigem.sacar(valor);
-                        contaDestino.depositar(valor);
-                        System.out.println("Transferência realizada com sucesso para a conta " + numeroConta);
-                    }
-                    else{
-                        System.out.println("Não foi possivel realizar a transferência para a conta " + numeroConta + "!");
-                    }
+                
+                if (contaDestino == null) {
+                    System.out.println("Conta de destino inválida: " + numeroConta);
+                    continue;
                 }
+                
+                contaOrigem.sacar(valor);
+                contaDestino.depositar(valor);
+                System.out.println("Transferência realizada com sucesso para a conta " + numeroConta);
             }
         }
+
 
         public int quantidadeContas(){
             return this.contas.size();
@@ -199,6 +220,19 @@ public class Banco {
             } return index; 
         }
 
+        public int consultarClientePorIndices(String cpf){
+            int index = -1;
+            Cliente verificarCliente = consultarCliente(cpf);
+            if (verificarCliente != null) {
+                for (int i = 0; i < this.clientes.size(); i++){
+                    if (this.clientes.get(index).getCpf().equals(cpf)){
+                        index = i;
+                        break;
+                    };
+                }
+            } return index;
+        }
+
         public void excluirConta(String numero){
             int indexExcluir = consultarContaPorIndices(numero);
             if (indexExcluir != -1) {
@@ -219,6 +253,16 @@ public class Banco {
             } 
         }
 
+        public void excluirClientePeloIndices(String numero){
+            int indexExcluir = consultarClientePorIndices(numero);
+            if (indexExcluir != -1) {
+                for (int i = indexExcluir; i < this.clientes.size(); i++){
+                    this.clientes.set(i, this.clientes.get(i+1));
+                }
+                this.clientes.remove(this.clientes.size()-1);
+            }
+        }
+
         public int gerarId(){
             Random random = new Random();
             return random.nextInt(100000000, 900000000);
@@ -228,16 +272,17 @@ public class Banco {
             System.out.println("\nBem-vindo ao Banco!");
             System.out.println("Digite uma opção:");
             System.out.println("=========================================================\nContas");
-            System.out.println("|| 1 - Inserir      || 2 - Consultar || 3 - Sacar      ||");
-            System.out.println("|| 4 - Depositar    || 5 - Excluir   || 6 - Transferir ||");
-            System.out.println("|| 7 - Totalizações ||");
+            System.out.println("|| 01 - Inserir      || 02 - Consultar          || 03 - Sacar      ||");
+            System.out.println("|| 04 - Depositar    || 05 - Excluir            || 06 - Transferir ||");
+            System.out.println("|| 07 - Totalizações || 08 - Mudar Titularidade ||");
             System.out.println("=========================================================\nClientes:");
-            System.out.println("|| 8 - Inserir      || 9 - Consultar || 10 - Associar  ||");
-            System.out.println("|| 0 - Sair         ||\n");
+            System.out.println("|| 09 - Inserir      || 10 - Consultar          || 11 - Associar  ||");
+            System.out.println("|| 12 - Excluir      || 13 - Contas Nulas       ||");
+            System.out.println("|| 0  - Sair         ||\n");
         }
         
 
-        public void menuConta() {
+        public void menuConta(App aplicativo, Banco banco) {
             Scanner scanner = new Scanner(System.in);
             int opcao;
             do {
@@ -248,123 +293,59 @@ public class Banco {
     
                 switch (opcao) {
                     case 1:
-                        System.out.print("Informe o número da conta: ");
-                        String numeroContaCriada = scanner.nextLine();
-                        System.out.print("Informe o saldo inicial: ");
-                        float saldoInicial = scanner.nextFloat();
-                        int id = gerarId();
-                        inserirConta(numeroContaCriada, saldoInicial, id);
+                        aplicativo.inserirConta(banco, scanner);
                         break;
 
                     case 2:
-                        System.out.print("Informe o número da conta: ");
-                        Conta contaConsultada = consultarConta(scanner.nextLine());
-                        if (contaConsultada != null) {
-                            System.out.println("Conta: " + contaConsultada.getNumero() + ", Saldo: " + contaConsultada.consultarSaldo());
-                        } else {
-                            System.out.println("Conta não encontrada.");
-                        }
+                        aplicativo.consultarConta(banco, scanner);
                         break;
 
                     case 3:
-                        System.out.print("Informe o número da conta: ");
-                        Conta numeroContaParaSacar = consultarConta(scanner.nextLine());
-                        if (numeroContaParaSacar!= null) {
-                            System.out.print("Informe o valor para sacar: ");
-                            float valorSacar = scanner.nextFloat();
-                            numeroContaParaSacar.sacar(valorSacar);
-                        }
-                        else {
-                            System.out.println("Conta não encontrada.");
-                        }
+                        aplicativo.sacarDinheiro(banco, scanner);
                             break;
 
                     case 4:
-                        System.out.print("Informe o número da conta: ");
-                        Conta numeroContaParaDeposito = consultarConta(scanner.nextLine());
-                        if (numeroContaParaDeposito!= null) {
-                            System.out.print("Informe o valor para depositar: ");
-                            float valorSacar = scanner.nextFloat();
-                            numeroContaParaDeposito.depositar(valorSacar);
-                        }
-                        else {
-                            System.out.println("Conta não encontrada.");
-                        }
+                        aplicativo.depositarDinheiro(banco, scanner);
                             break;
 
                     case 5:
-                        System.out.print("Informe o número da conta: ");
-                        String numeroContaExcluir = scanner.nextLine();
-                        excluirContaPeloIndices(numeroContaExcluir);
+                        aplicativo.excluirConta(banco, scanner);
                             break;
                             
                     case 6:
-                        System.out.print("Informe o número da conta de origem: ");
-                        String numeroContaOrigem = scanner.nextLine();
-                        System.out.print("Informe o número da conta de destino: ");
-                        String numeroContaDestino = scanner.nextLine();
-                        System.out.print("Informe o valor a ser transferido: ");
-                        float valor = scanner.nextFloat();
-                        transferirDinheiro(numeroContaOrigem, numeroContaDestino, valor);
+                        aplicativo.transferencia(banco, scanner);
                             break;
 
                     case 7:
-                        System.out.println("Total de contas: " + quantidadeContas());
+                        aplicativo.totalizar(banco);
                             break;
-
                     case 8:
-                        id = gerarId();
-                        System.out.print("Informe o nome do Cliente: ");
-                        String nome = scanner.nextLine();
-
-                        System.out.print("Informe o CPF do Cliente: ");
-                        String cpfParaCadastro = scanner.nextLine();
-
-                        LocalDate dataNascimento = null;
-                        while (dataNascimento == null) {
-                            try {
-                                System.out.print("Informe a data de nascimento (dd/MM/yyyy): ");
-                                String dataInput = scanner.nextLine();
-                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-                                dataNascimento = LocalDate.parse(dataInput, formatter);
-                            } catch (DateTimeParseException e) {
-                                System.out.println("Formato de data inválido. Tente novamente.");
-                            }
-                        }
-
-                        Cliente cliente = new Cliente(id, nome, cpfParaCadastro, dataNascimento);
-                        inserirCliente(cliente);
+                        aplicativo.mudancaTitularidade(banco, scanner);
                         break;
 
-                        case 9:
-                        System.out.println("Informe o CPF do Cliente: ");
-                        Cliente contaClienteConsultado = consultarCliente(scanner.nextLine());
-                        if (contaClienteConsultado != null) {
-                            // Informar nome, cpf, dataNascimento
-                            System.out.println("Nome do Cliente: " + contaClienteConsultado.getNome() + "\n" + 
-                                               "CPF do Cliente: " + contaClienteConsultado.getCpf() + "\n" + 
-                                               "Data de Nascimento: " + contaClienteConsultado.getDataNascimento());
-                            
-                            // Listar contas do cliente
-                            List<Conta> contasDoCliente = contaClienteConsultado.listarContasCliente();
-                
-                         if (contasDoCliente == null) {
-                            System.out.println("Cliente não encontrado.");
-                        }
-                    }
+                    case 9:
+                        aplicativo.inserirCliente(banco, scanner);
+                        break;
+
+                    case 10:
+                        aplicativo.consultarCliente(banco, scanner);
                         break;
                         
-                    case 10:
-                        System.out.print("Informe o numero da Conta do Cliente: "); 
-                        String numeroDaContaAssociada = scanner.nextLine();
-                        System.out.print("Informe o CPF do Cliente: ");
-                        String cpfParaAssociarConta = scanner.nextLine();
-                        associarContaCliente(numeroDaContaAssociada, cpfParaAssociarConta);
-                            break;
+                    case 11:
+                        aplicativo.associarContaCliente(banco, scanner);
+                        break;
+                    
+                    case 12:
+                        aplicativo.excluirCliente(banco, scanner);
+                        break;
+
+                    case 13:
+                        aplicativo.listarContasNulas(banco);
 
                     case 0:
                         System.out.println("Saindo do menu...");
                         break;
+
                     default:
                         System.out.println("Opção inválida! Tente novamente.");
                 }
