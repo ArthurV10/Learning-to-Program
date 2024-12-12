@@ -94,6 +94,7 @@ public class Banco {
         }
 
         contaEncontrada.setCliente(clienteEncontrado);
+        clienteEncontrado.setConta(contaEncontrada);
         System.out.println("Cliente " + cpfCliente + " associado à conta " + numeroConta + " com sucesso.");
     }
 

@@ -68,4 +68,3 @@ public class Main {
         System.out.println("Média de saldos: " + banco.mediaSaldos());
     }
 }
-b  bw
