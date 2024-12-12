@@ -188,16 +188,15 @@ public class Banco {
 
         public int consultarContaPorIndices(String numeroConta){
             int index = -1;
-            Conta verificarConta = consultar(numeroConta);
-            if (verificarConta != null){
+            Conta verificarConta = consultar(numeroConta); 
+            if (verificarConta != null){ 
                 for (int i = 0; i < this.contas.size(); i++) {
-                    if (this.contas.get(index).getNumero() == numeroConta){
+                    if (this.contas.get(i).getNumero().equals(numeroConta)){
                         index = i;
-                        break;
-                    }
-                }
-            }
-            return index;
+                        break; 
+                    } 
+                } 
+            } return index; 
         }
 
         public void excluirConta(String numero){
@@ -210,11 +209,14 @@ public class Banco {
             }
         }
         
-        public void excluirContaPeloIndices(String numero) {
-            int indexExcluir = consultarContaPorIndices(numero);
-            if (indexExcluir != -1) {
-                this.contas.remove(indexExcluir);
-            }
+        public void excluirContaPeloIndices(String numero) { 
+            int indexExcluir = consultarContaPorIndices(numero); 
+            if (indexExcluir != -1) { 
+                this.contas.remove(indexExcluir); 
+                System.out.println("Conta removida com sucesso."); 
+            } 
+            else { System.out.println("Conta não encontrada."); 
+            } 
         }
 
         public int gerarId(){
