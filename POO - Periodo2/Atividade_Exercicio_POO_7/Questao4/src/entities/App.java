@@ -1,6 +1,6 @@
 package entities;
 
-
+import java.io.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -15,7 +15,7 @@ public class App {
     }
     
     public void inserirContaPoupanca(Banco banco, Scanner scanner) {
-        System.out.print("Deseja criar:\n1 - Conta\n2 - Poupança\n>>> ");
+        System.out.print("Deseja criar:\n1 - Conta\n2 - Poupança\n3 - Imposto\n>>> ");
         int opcao = scanner.nextInt();
         scanner.nextLine();
     
@@ -24,7 +24,7 @@ public class App {
                 System.out.print("Informe o número da conta: ");
                 String numeroContaCriada = scanner.nextLine();
                 System.out.print("Informe o saldo inicial: ");
-                float saldoInicialConta = scanner.nextFloat();
+                double saldoInicialConta = scanner.nextDouble();
                 scanner.nextLine();
     
                 int idConta = banco.gerarId();
@@ -36,7 +36,7 @@ public class App {
                 System.out.print("Informe o número da poupança: ");
                 String numeroPoupancaCriada = scanner.nextLine();
                 System.out.print("Informe o saldo inicial: ");
-                float saldoInicialPoupanca = scanner.nextFloat();
+                double saldoInicialPoupanca = scanner.nextDouble();
                 scanner.nextLine();
     
                
@@ -44,7 +44,17 @@ public class App {
                 banco.inserirPoupanca(numeroPoupancaCriada, saldoInicialPoupanca, idPoupanca);
                 System.out.println("Poupança criada com sucesso! ID: " + idPoupanca);
                 break;
+            case 3:
+                System.out.print("Informe o número da conta: ");
+                String numeroImpostoCriada = scanner.nextLine();
+                System.out.print("Informe o saldo inicial: ");
+                double saldoImpostoConta = scanner.nextDouble();
+                scanner.nextLine();
     
+                int idImposto = banco.gerarId();
+                banco.inserirImposto(numeroImpostoCriada, saldoImpostoConta, idImposto); 
+                System.out.println("Conta criada com sucesso! ID: " + idImposto);
+                break;
             default:
                 System.out.println("Opção inválida.");
         }
@@ -64,9 +74,15 @@ public class App {
     public void sacarDinheiro(Banco banco, Scanner scanner){
         System.out.print("Informe o número da conta: ");
         Conta numeroContaParaSacar = banco.consultarConta(scanner.nextLine());
-        if (numeroContaParaSacar!= null) {
+        if (numeroContaParaSacar instanceof Imposto){
             System.out.print("Informe o valor para sacar: ");
-            float valorSacar = scanner.nextFloat();
+            double valorSacar = scanner.nextDouble();
+            double imposto = ((Imposto)numeroContaParaSacar).getTaxaImposto() * valorSacar;
+            numeroContaParaSacar.sacar(valorSacar + imposto);
+        }
+        else if (numeroContaParaSacar!= null) {
+            System.out.print("Informe o valor para sacar: ");
+            double valorSacar = scanner.nextDouble();
             numeroContaParaSacar.sacar(valorSacar);
         }
         else {
@@ -79,7 +95,7 @@ public class App {
         Conta numeroContaParaDeposito = banco.consultarConta(scanner.nextLine());
         if (numeroContaParaDeposito!= null) {
             System.out.print("Informe o valor para depositar: ");
-            float valorSacar = scanner.nextFloat();
+            double valorSacar = scanner.nextDouble();
             numeroContaParaDeposito.depositar(valorSacar);
         }
         else {
@@ -126,7 +142,7 @@ public class App {
         System.out.print("Informe o número da conta de destino: ");
         String numeroContaDestino = scanner.nextLine();
         System.out.print("Informe o valor a ser transferido: ");
-        float valor = scanner.nextFloat();
+        double valor = scanner.nextDouble();
         banco.transferirDinheiro(numeroContaOrigem, numeroContaDestino, valor);
     }
                  
@@ -204,4 +220,62 @@ public class App {
         String numeroContaParaJuros = scanner.nextLine();
         banco.renderJuros(numeroContaParaJuros);
     }
+
+    // TODO: Fazer direitinho dps
+    // public void lerArquivo(Banco banco, String caminhoArquivo){
+
+    //     try (BufferedReader br = new BufferedReader(new FileReader(caminhoArquivo))) {
+    //         String linha;
+
+    //         while ((linha = br.readLine()) != null) {
+    //             String[] partes = linha.split(";");
+    //             String tipo = partes[0]; // Tipo da conta (C, CP, CI)
+
+    //             // Comuns para todas as contas
+    //             String numero = partes[1];
+    //             double saldo = Double.parseDouble(partes[2]);
+    //             int id = Integer.parseInt(partes[4]);
+    //             String titular = partes[5];
+
+    //             switch (tipo) {
+    //                 case "C":
+    //                     Ba.inserirConta(new Conta(numero, saldo, id, titular));
+    //                     break;
+    //                 case "CP":
+    //                     double taxaPoupanca = Double.parseDouble(partes[3]);
+    //                     contas.add(new ContaPoupanca(numero, saldo, id, taxaPoupanca, titular));
+    //                     break;
+    //                 case "CI":
+    //                     double taxaImposto = Double.parseDouble(partes[3]);
+    //                     contas.add(new ContaImposto(numero, saldo, id, taxaImposto, titular));
+    //                     break;
+    //                 default:
+    //                     System.out.println("Tipo de conta desconhecido: " + tipo);
+    //             }
+    //         }
+    //         System.out.println("Contas carregadas com sucesso.");
+    //     } catch (IOException e) {
+    //         System.out.println("Erro ao ler o arquivo: " + e.getMessage());
+    //     }
+    // }
+
+    // public gravarArquivo(Banco banco){
+
+    // }
+
+    // public  lerGravarArquivo(Banco banco, Scanner scanner){
+    //     System.out.print("Opcoes: \n1 - Ler Arquivo\n2 - Gravar Arquivo");
+    //     int opcao = scanner.nextInt();
+    //     switch (opcao){
+    //         case 1:
+    //             lerArquivo(banco);
+    //             break;
+    //         case 2:
+    //             gravarArquivo(banco);
+    //             break;
+    //         default:
+    //             System.out.println("Opçao Invalida!");
+    //             break;
+    //     }
+    // }
 }

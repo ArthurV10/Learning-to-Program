@@ -14,7 +14,7 @@ public class Banco {
         this.clientes = new ArrayList<>(); // Inicialização da lista de clientes
     }
 
-    public void inserirConta(String numero, float saldo, int id) {
+    public void inserirConta(String numero, double saldo, int id) {
         Conta contaInserida = new Conta(numero, saldo, id);
         if (contas.contains(contaInserida)){
             System.out.println("Erro: Conta com número ou ID já cadastrada: " + numero);
@@ -23,8 +23,17 @@ public class Banco {
         contas.add(contaInserida);
     }
 
-    public void inserirPoupanca(String numero, float saldo, int id) {
+    public void inserirPoupanca(String numero, double saldo, int id) {
         Poupanca contaInserida = new Poupanca(numero, saldo, id);
+        if (contas.contains(contaInserida)){
+            System.out.println("Erro: Conta com número ou ID já cadastrada: " + numero);
+            return; // Impede duplicação de contas
+        }
+        contas.add(contaInserida);
+    }
+
+    public void inserirImposto(String numero, double saldo, int id){
+        Imposto contaInserida = new Imposto(numero, saldo, id);
         if (contas.contains(contaInserida)){
             System.out.println("Erro: Conta com número ou ID já cadastrada: " + numero);
             return; // Impede duplicação de contas
@@ -122,15 +131,27 @@ public class Banco {
         }
 
         // Sacar Dinheiro
-        public void sacarDinheiro(Conta conta, int valor){
-            if(conta.consultarSaldo() >= valor){
-                conta.sacar(valor);
-                System.out.println("Saque realizado com sucesso!");
-            }
-            else{
-                System.out.println("Não foi possivel realizar saque!");
+        public void sacarDinheiro(Conta conta, int valor) {
+            if (conta instanceof Imposto) {
+                double imposto = ((Imposto) conta).getTaxaImposto() * valor;
+                double totalSaque = valor + imposto;
+        
+                if (conta.consultarSaldo() >= totalSaque) {
+                    conta.sacar(totalSaque);
+                    System.out.println("Saque com imposto realizado com sucesso!");
+                } else {
+                    System.out.println("Saldo insuficiente para saque com imposto.");
+                }
+            } else {
+                if (conta.consultarSaldo() >= valor) {
+                    conta.sacar(valor);
+                    System.out.println("Saque realizado com sucesso!");
+                } else {
+                    System.out.println("Não foi possível realizar o saque!");
+                }
             }
         }
+        
 
         // Depositar Dinheiro
         public void depositarDinheiro(Conta conta, int valor){
@@ -139,7 +160,7 @@ public class Banco {
         }
 
         // Transferir Dinheiro
-        public void transferirDinheiro(String numeroContaOrigem, String numeroContaDestino, float valor){
+        public void transferirDinheiro(String numeroContaOrigem, String numeroContaDestino, double valor){
             Conta contaOrigem = consultar(numeroContaOrigem);
             Conta contaDestino = consultar(numeroContaDestino);
 
@@ -209,7 +230,7 @@ public class Banco {
             return total;
         }
 
-        public float mediaSaldos(){
+        public double mediaSaldos(){
             return saldoContasTotal()/quantidadeContas();
         }
 
@@ -291,14 +312,17 @@ public class Banco {
         public void exibirMenu() {
             System.out.println("\nBem-vindo ao Banco!");
             System.out.println("Digite uma opção:");
-            System.out.println("=========================================================\nContas");
-            System.out.println("|| 01 - Inserir      || 02 - Consultar          || 03 - Sacar        ||");
-            System.out.println("|| 04 - Depositar    || 05 - Excluir            || 06 - Transferir   ||");
-            System.out.println("|| 07 - Totalizações || 08 - Mudar Titularidade || 09 - Render Juros ||");
-            System.out.println("=========================================================\nClientes:");
-            System.out.println("|| 10 - Inserir      || 11 - Consultar          || 12 - Associar     ||");
-            System.out.println("|| 13 - Excluir      || 14 - Contas Nulas       ||");
-            System.out.println("|| 0  - Sair         ||\n");
+            System.out.println("===============================================================================\n* Contas:");
+            System.out.println("|| 01 - Inserir              || 02 - Consultar          || 03 - Sacar        ||");
+            System.out.println("|| 04 - Depositar            || 05 - Excluir            || 06 - Transferir   ||");
+            System.out.println("|| 07 - Totalizações         || 08 - Mudar Titularidade || 09 - Render Juros ||");
+            System.out.println("||===========================================================================||\n* Clientes:");
+            System.out.println("|| 10 - Inserir              || 11 - Consultar          || 12 - Associar     ||");
+            System.out.println("|| 13 - Excluir              || 14 - Contas Nulas       ||                   ||");
+            System.out.println("||===========================================================================||\n* Extras:");
+            System.out.println("|| 20 - Ler e Gravar Arquivo ||                         ||                   ||");
+            System.out.println("|| 0  - Sair                 ||                         ||                   ||");
+            System.out.println("===============================================================================");
         }
         
 
@@ -365,6 +389,8 @@ public class Banco {
                     case 14:
                         aplicativo.listarContasNulas(banco);
 
+                    // case 20:
+                    //     aplicativo.lerGravarArquivo(banco, scanner);
                     case 0:
                         System.out.println("Saindo do menu...");
                         break;
@@ -373,5 +399,6 @@ public class Banco {
                         System.out.println("Opção inválida! Tente novamente.");
                 }
             } while (opcao != 0);
+            scanner.close();    
         }
 }

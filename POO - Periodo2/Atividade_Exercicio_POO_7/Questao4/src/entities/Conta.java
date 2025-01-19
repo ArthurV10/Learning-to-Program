@@ -2,17 +2,17 @@ package entities;
 
 public class Conta {
     private String numero;
-    private float saldo;
+    private double saldo;
     private int id;
     private Cliente cliente;
 
-    public Conta(String numero, float saldo, int id) {
+    public Conta(String numero, double saldo, int id) {
         this.numero = numero;
         this.saldo = saldo;
         this.id = id;
     }
 
-    public Conta(String numero, float saldo) {
+    public Conta(String numero, double saldo) {
         this.numero = numero;
         this.saldo = saldo;
     }
@@ -33,11 +33,11 @@ public class Conta {
         return this.id;
     }
 
-    public float getSaldo() {
+    public double getSaldo() {
         return this.saldo;
     }
 
-    public void sacar(float valor) {
+    public void sacar(double valor) {
         if (valor > 0 && this.saldo >= valor) {
             this.saldo -= valor;
         } else {
@@ -45,7 +45,7 @@ public class Conta {
         }
     }
 
-    public void depositar(float valor) {
+    public void depositar(double valor) {
         if (valor > 0) {
             this.saldo += valor;
         } else {
@@ -53,11 +53,11 @@ public class Conta {
         }
     }
 
-    public float consultarSaldo() {
+    public double consultarSaldo() {
         return this.saldo;
     }
 
-    public void transferir(Conta contaDestino, float valor) {
+    public void transferir(Conta contaDestino, double valor) {
         if (valor > 0 && this.saldo >= valor) {
             this.sacar(valor);
             contaDestino.depositar(valor);

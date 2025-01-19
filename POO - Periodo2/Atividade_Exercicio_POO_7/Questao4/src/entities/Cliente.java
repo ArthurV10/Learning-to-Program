@@ -82,8 +82,8 @@ public class Cliente {
         return null;
     }
 
-    public float totalizarSaldoCliente() {
-        float valorTotal = 0;
+    public double totalizarSaldoCliente() {
+        double valorTotal = 0;
         for (Conta contaCliente : this.contas) {
             valorTotal += contaCliente.consultarSaldo();
         }
